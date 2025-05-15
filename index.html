@@ -2,31 +2,49 @@
 <html>
 <head>
   <title>Send Chromebook Notification</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
       --blue: #1a73e8;
-      --bg: #f8f9fa;
-      --text: #202124;
+      --bg-light: #f8f9fa;
+      --text-light: #202124;
+      --bg-dark: #202124;
+      --text-dark: #e8eaed;
+      --card-bg-light: white;
+      --card-bg-dark: #303134;
+      --input-bg-light: white;
+      --input-bg-dark: #3c4043;
+      --input-border-light: #ccc;
+      --input-border-dark: #5f6368;
     }
     body {
-      background-color: var(--bg);
-      color: var(--text);
+      background-color: var(--bg-light);
+      color: var(--text-light);
       font-family: 'Segoe UI', Roboto, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    body.dark {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
     }
     .card {
-      background: white;
+      background: var(--card-bg-light);
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.1);
       padding: 2rem;
       width: 100%;
       max-width: 400px;
+      transition: background-color 0.3s ease;
+    }
+    body.dark .card {
+      background: var(--card-bg-dark);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
     h2 {
       margin-top: 0;
@@ -41,11 +59,20 @@
     input, textarea {
       width: 100%;
       padding: 0.8rem;
-      border: 1px solid #ccc;
+      border: 1px solid var(--input-border-light);
       border-radius: 8px;
       font-size: 1rem;
       box-sizing: border-box;
       resize: none;
+      background-color: var(--input-bg-light);
+      color: var(--text-light);
+      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+    body.dark input,
+    body.dark textarea {
+      background-color: var(--input-bg-dark);
+      border-color: var(--input-border-dark);
+      color: var(--text-dark);
     }
     button {
       margin-top: 1.5rem;
@@ -67,17 +94,63 @@
       font-size: 0.95rem;
       text-align: center;
     }
+    /* Dark mode toggle switch */
+    .toggle-container {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 26px;
+    }
+    .switch input { display: none; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      border-radius: 34px;
+      transition: 0.4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      border-radius: 50%;
+      transition: 0.4s;
+    }
+    input:checked + .slider {
+      background-color: var(--blue);
+    }
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
   </style>
 </head>
 <body>
   <div class="card">
+    <div class="toggle-container">
+      <label class="switch" title="Toggle dark mode">
+        <input type="checkbox" id="darkModeToggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
     <h2>📢 Chromebook Notify</h2>
 
     <label for="title">Title</label>
-    <input type="text" id="title" placeholder="e.g., Warning" />
+    <input type="text" id="title" placeholder="e.g., Warning" autocomplete="off" />
 
     <label for="message">Message</label>
-    <textarea id="message" rows="3" placeholder="e.g., Please plug in your charger."></textarea>
+    <textarea id="message" rows="3" placeholder="e.g., Please plug in your charger." autocomplete="off"></textarea>
 
     <button onclick="sendCommand()">Send Notification</button>
     <div id="status"></div>
@@ -87,7 +160,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase config (yours)
     const firebaseConfig = {
       apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
       authDomain: "notify-78da1.firebaseapp.com",
@@ -125,6 +197,26 @@
           status.textContent = "❌ Error sending notification.";
         });
     }
+
+    // Dark mode toggle logic
+    const toggle = document.getElementById("darkModeToggle");
+    const body = document.body;
+
+    // Load saved preference from localStorage
+    if (localStorage.getItem("darkMode") === "enabled") {
+      body.classList.add("dark");
+      toggle.checked = true;
+    }
+
+    toggle.addEventListener("change", () => {
+      if (toggle.checked) {
+        body.classList.add("dark");
+        localStorage.setItem("darkMode", "enabled");
+      } else {
+        body.classList.remove("dark");
+        localStorage.setItem("darkMode", "disabled");
+      }
+    });
   </script>
 </body>
 </html>
