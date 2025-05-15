@@ -2,46 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Send Notification</title>
+  <title>Controller</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Roboto', sans-serif; background: #f1f3f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
-    .card { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-    h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #202124; }
-    label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5f6368; }
-    select, input, textarea, button {
-      width: 100%; margin-bottom: 1rem; padding: 0.75rem;
-      border: 1px solid #dadce0; border-radius: 8px; font-size: 1rem;
-    }
-    button { background: #1a73e8; color: white; font-weight: bold; cursor: pointer; border: none; }
+    body { font-family: sans-serif; background: #f1f3f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .box { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+    label, select, input, textarea, button { width: 100%; margin-bottom: 1rem; font-size: 1rem; }
+    button { background: #1a73e8; color: white; border: none; padding: 0.75rem; border-radius: 8px; cursor: pointer; }
     button:hover { background: #1669c1; }
-    .status { font-size: 0.95rem; text-align: center; color: #34a853; }
+    .status { color: #34a853; text-align: center; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Send Notification</h1>
+  <div class="box">
+    <h2>Send Notification</h2>
 
-    <label for="target">Select Gmail</label>
+    <label for="target">Target Session</label>
     <select id="target">
-      <option>Loading...</option>
+      <option value="broadcast">🔊 All Sessions</option>
     </select>
 
     <label for="title">Title</label>
-    <input id="title" type="text" placeholder="Notification title" />
+    <input id="title" type="text" placeholder="Enter title" />
 
     <label for="message">Message</label>
-    <textarea id="message" rows="3" placeholder="Notification message"></textarea>
+    <textarea id="message" placeholder="Enter message"></textarea>
 
     <button onclick="sendNotification()">Send</button>
-
     <div class="status" id="status"></div>
   </div>
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
@@ -55,38 +49,37 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
+    const status = document.getElementById("status");
     const targetSelect = document.getElementById("target");
-    const statusEl = document.getElementById("status");
 
-    // Load sessions (Gmail keys)
+    // Update session list
     db.ref("sessions").on("value", snapshot => {
       const data = snapshot.val() || {};
-      targetSelect.innerHTML = '';
-      Object.keys(data).forEach(emailKey => {
-        const option = document.createElement("option");
-        option.value = emailKey;
-        option.textContent = emailKey.replace(/_/g, ".");
-        targetSelect.appendChild(option);
+      targetSelect.innerHTML = `<option value="broadcast">🔊 All Sessions</option>`;
+      Object.keys(data).forEach(id => {
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = id;
+        targetSelect.appendChild(opt);
       });
     });
 
     function sendNotification() {
-      const emailKey = targetSelect.value;
+      const target = targetSelect.value;
       const title = document.getElementById("title").value.trim();
       const message = document.getElementById("message").value.trim();
 
       if (!title || !message) {
-        statusEl.textContent = "⚠️ Fill all fields.";
+        status.textContent = "⚠️ Fill out all fields.";
         return;
       }
 
-      db.ref(`sessions/${emailKey}`).set({ title, message }, (err) => {
-        if (err) {
-          statusEl.textContent = "❌ Failed to send.";
-        } else {
-          statusEl.textContent = "✅ Sent!";
-        }
+      const ref = target === "broadcast"
+        ? db.ref("broadcast")
+        : db.ref(`sessions/${target}`);
+
+      ref.set({ title, message }, err => {
+        status.textContent = err ? "❌ Failed to send" : "✅ Sent!";
       });
     }
   </script>
