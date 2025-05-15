@@ -1,164 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Send Chromebook Notification</title>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Send Notification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
   <style>
-    :root {
-      --blue: #1a73e8;
-      --bg-light: #f8f9fa;
-      --text-light: #202124;
-      --bg-dark: #202124;
-      --text-dark: #e8eaed;
-      --card-bg-light: white;
-      --card-bg-dark: #303134;
-      --input-bg-light: white;
-      --input-bg-dark: #3c4043;
-      --input-border-light: #ccc;
-      --input-border-dark: #5f6368;
+    body { font-family: 'Roboto', sans-serif; background: #f1f3f4; display: flex; justify-content: center; align-items: center; height: 100vh; }
+    .card { background: #fff; padding: 2rem; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+    h1 { font-size: 1.5rem; margin-bottom: 1rem; color: #202124; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #5f6368; }
+    select, input, textarea, button {
+      width: 100%; margin-bottom: 1rem; padding: 0.75rem;
+      border: 1px solid #dadce0; border-radius: 8px; font-size: 1rem;
     }
-    body {
-      background-color: var(--bg-light);
-      color: var(--text-light);
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
-    }
-    .card {
-      background: var(--card-bg-light);
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      padding: 2rem;
-      width: 100%;
-      max-width: 400px;
-      transition: background-color 0.3s ease;
-    }
-    body.dark .card {
-      background: var(--card-bg-dark);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    }
-    h2 {
-      margin-top: 0;
-      color: var(--blue);
-    }
-    label {
-      display: block;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      font-weight: 600;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid var(--input-border-light);
-      border-radius: 8px;
-      font-size: 1rem;
-      box-sizing: border-box;
-      resize: none;
-      background-color: var(--input-bg-light);
-      color: var(--text-light);
-      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-    }
-    body.dark input,
-    body.dark textarea {
-      background-color: var(--input-bg-dark);
-      border-color: var(--input-border-dark);
-      color: var(--text-dark);
-    }
-    button {
-      margin-top: 1.5rem;
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 1rem;
-      background-color: var(--blue);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-    button:hover {
-      background-color: #1664c1;
-    }
-    #status {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      text-align: center;
-    }
-    /* Dark mode toggle switch */
-    .toggle-container {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 1rem;
-      user-select: none;
-    }
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 26px;
-    }
-    .switch input { display: none; }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      border-radius: 34px;
-      transition: 0.4s;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.4s;
-    }
-    input:checked + .slider {
-      background-color: var(--blue);
-    }
-    input:checked + .slider:before {
-      transform: translateX(24px);
-    }
+    button { background: #1a73e8; color: white; font-weight: bold; cursor: pointer; border: none; }
+    button:hover { background: #1669c1; }
+    .status { font-size: 0.95rem; text-align: center; color: #34a853; }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="toggle-container">
-      <label class="switch" title="Toggle dark mode">
-        <input type="checkbox" id="darkModeToggle" />
-        <span class="slider"></span>
-      </label>
-    </div>
+    <h1>Send Notification</h1>
 
-    <h2>📢 Chromebook Notify</h2>
+    <label for="target">Select Gmail</label>
+    <select id="target">
+      <option>Loading...</option>
+    </select>
 
     <label for="title">Title</label>
-    <input type="text" id="title" placeholder="e.g., Warning" autocomplete="off" />
+    <input id="title" type="text" placeholder="Notification title" />
 
     <label for="message">Message</label>
-    <textarea id="message" rows="3" placeholder="e.g., Please plug in your charger." autocomplete="off"></textarea>
+    <textarea id="message" rows="3" placeholder="Notification message"></textarea>
 
-    <button onclick="sendCommand()">Send Notification</button>
-    <div id="status"></div>
+    <button onclick="sendNotification()">Send</button>
+
+    <div class="status" id="status"></div>
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
@@ -173,50 +56,39 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function sendCommand() {
-      const titleInput = document.getElementById("title");
-      const messageInput = document.getElementById("message");
-      const status = document.getElementById("status");
+    const targetSelect = document.getElementById("target");
+    const statusEl = document.getElementById("status");
 
-      const title = titleInput.value.trim();
-      const message = messageInput.value.trim();
+    // Load sessions (Gmail keys)
+    db.ref("sessions").on("value", snapshot => {
+      const data = snapshot.val() || {};
+      targetSelect.innerHTML = '';
+      Object.keys(data).forEach(emailKey => {
+        const option = document.createElement("option");
+        option.value = emailKey;
+        option.textContent = emailKey.replace(/_/g, ".");
+        targetSelect.appendChild(option);
+      });
+    });
+
+    function sendNotification() {
+      const emailKey = targetSelect.value;
+      const title = document.getElementById("title").value.trim();
+      const message = document.getElementById("message").value.trim();
 
       if (!title || !message) {
-        status.textContent = "⚠️ Please enter both a title and message.";
+        statusEl.textContent = "⚠️ Fill all fields.";
         return;
       }
 
-      db.ref("commands").set({ title, message })
-        .then(() => {
-          status.textContent = "✅ Notification sent!";
-          titleInput.value = "";
-          messageInput.value = "";
-        })
-        .catch((error) => {
-          console.error(error);
-          status.textContent = "❌ Error sending notification.";
-        });
+      db.ref(`sessions/${emailKey}`).set({ title, message }, (err) => {
+        if (err) {
+          statusEl.textContent = "❌ Failed to send.";
+        } else {
+          statusEl.textContent = "✅ Sent!";
+        }
+      });
     }
-
-    // Dark mode toggle logic
-    const toggle = document.getElementById("darkModeToggle");
-    const body = document.body;
-
-    // Load saved preference from localStorage
-    if (localStorage.getItem("darkMode") === "enabled") {
-      body.classList.add("dark");
-      toggle.checked = true;
-    }
-
-    toggle.addEventListener("change", () => {
-      if (toggle.checked) {
-        body.classList.add("dark");
-        localStorage.setItem("darkMode", "enabled");
-      } else {
-        body.classList.remove("dark");
-        localStorage.setItem("darkMode", "disabled");
-      }
-    });
   </script>
 </body>
 </html>
