@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Notification Sender</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>📢 Send Notification</h2>
+    <input type="text" id="title" placeholder="Notification Title" />
+    <textarea id="message" rows="3" placeholder="Notification Message"></textarea>
+    <button onclick="sendCommand()">Send</button>
+    <p id="status"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
+      authDomain: "notify-78da1.firebaseapp.com",
+      databaseURL: "https://notify-78da1-default-rtdb.firebaseio.com",
+      projectId: "notify-78da1",
+      storageBucket: "notify-78da1.appspot.com",
+      messagingSenderId: "936289141781",
+      appId: "1:936289141781:web:065ef577df0aa61f40fa1c"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function sendCommand() {
+      const title = document.getElementById("title").value;
+      const message = document.getElementById("message").value;
+      const status = document.getElementById("status");
+
+      if (!title || !message) {
+        status.textContent = "Please enter both a title and a message.";
+        return;
+      }
+
+      db.ref("commands").set({ title, message })
+        .then(() => {
+          status.textContent = "✅ Notification sent!";
+        })
+        .catch((error) => {
+          console.error(error);
+          status.textContent = "❌ Failed to send notification.";
+        });
+    }
+  </script>
+</body>
+</html>
