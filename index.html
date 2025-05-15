@@ -1,53 +1,93 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Notification Sender</title>
+  <title>Send Chromebook Notification</title>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    :root {
+      --blue: #1a73e8;
+      --bg: #f8f9fa;
+      --text: #202124;
+    }
     body {
-      font-family: sans-serif;
-      background: #f0f0f0;
-      padding: 2rem;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
     .card {
       background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      max-width: 400px;
-      margin: auto;
-    }
-    input, textarea, button {
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      padding: 2rem;
       width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.6rem;
-      font-size: 1rem;
-      border-radius: 6px;
+      max-width: 400px;
+    }
+    h2 {
+      margin-top: 0;
+      color: var(--blue);
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      resize: none;
     }
     button {
-      background: #007bff;
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      background-color: var(--blue);
       color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background 0.2s ease;
     }
     button:hover {
-      background: #0056b3;
+      background-color: #1664c1;
+    }
+    #status {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>📢 Send Notification</h2>
-    <input type="text" id="title" placeholder="Notification Title" />
-    <textarea id="message" rows="3" placeholder="Notification Message"></textarea>
-    <button onclick="sendCommand()">Send</button>
-    <p id="status"></p>
+    <h2>📢 Chromebook Notify</h2>
+
+    <label for="title">Title</label>
+    <input type="text" id="title" placeholder="e.g., Warning" />
+
+    <label for="message">Message</label>
+    <textarea id="message" rows="3" placeholder="e.g., Please plug in your charger."></textarea>
+
+    <button onclick="sendCommand()">Send Notification</button>
+    <div id="status"></div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
   <script>
+    // Firebase config (yours)
     const firebaseConfig = {
       apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
       authDomain: "notify-78da1.firebaseapp.com",
@@ -62,22 +102,27 @@
     const db = firebase.database();
 
     function sendCommand() {
-      const title = document.getElementById("title").value;
-      const message = document.getElementById("message").value;
+      const titleInput = document.getElementById("title");
+      const messageInput = document.getElementById("message");
       const status = document.getElementById("status");
 
+      const title = titleInput.value.trim();
+      const message = messageInput.value.trim();
+
       if (!title || !message) {
-        status.textContent = "Please enter both a title and a message.";
+        status.textContent = "⚠️ Please enter both a title and message.";
         return;
       }
 
       db.ref("commands").set({ title, message })
         .then(() => {
           status.textContent = "✅ Notification sent!";
+          titleInput.value = "";
+          messageInput.value = "";
         })
         .catch((error) => {
           console.error(error);
-          status.textContent = "❌ Failed to send notification.";
+          status.textContent = "❌ Error sending notification.";
         });
     }
   </script>
