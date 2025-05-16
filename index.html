@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    /* Loading Screen Styles */
+    /* ... (unchanged CSS from your previous code) ... */
     #loadingScreen {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -36,8 +36,6 @@
         visibility: hidden;
       }
     }
-
-    /* Root and variables */
     :root {
       --blue: #1a73e8;
       --bg-light: #f8f9fa;
@@ -152,7 +150,6 @@
     body.dark #status {
       color: #ddd;
     }
-    /* Dark mode toggle switch */
     .toggle-container {
       display: flex;
       justify-content: flex-end;
@@ -191,8 +188,6 @@
     input:checked + .slider:before {
       transform: translateX(22px);
     }
-
-    /* Settings panel */
     details {
       margin-top: 1rem;
       border-top: 1px solid #ccc;
@@ -206,8 +201,6 @@
       outline: none;
       user-select: none;
     }
-
-    /* Notification preview box */
     #notificationPreview {
       margin-top: 1rem;
       padding: 0.7rem 1rem;
@@ -234,8 +227,6 @@
       user-select: none;
       margin-top: 0.2rem;
     }
-
-    /* Responsive tweaks */
     @media (max-width: 480px) {
       body {
         font-size: 13px;
@@ -255,6 +246,9 @@
       }
     }
   </style>
+  <!-- Add Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
   <div id="loadingScreen">
@@ -318,7 +312,20 @@
   </div>
 
   <script>
-    // Loading screen fade and show main UI after delay
+    // --- Firebase Config and Initialization ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
+      authDomain: "notify-78da1.firebaseapp.com",
+      databaseURL: "https://notify-78da1-default-rtdb.firebaseio.com",
+      projectId: "notify-78da1",
+      storageBucket: "notify-78da1.appspot.com",
+      messagingSenderId: "936289141781",
+      appId: "1:936289141781:web:065ef577df0aa61f40fa1c"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // --- UI/UX Code ---
     window.addEventListener("load", () => {
       setTimeout(() => {
         const loading = document.getElementById("loadingScreen");
@@ -362,17 +369,14 @@
 
     // Apply custom styles based on inputs or theme
     function applyCustomStyles() {
-      // Background color if no bg image
       if (!bgImageInput.dataset.hasImage) {
         body.style.backgroundImage = "";
         body.style.backgroundColor = bgColorInput.value;
       }
-      // Font size
       const size = parseInt(fontSizeInput.value, 10);
       if (size >= 12 && size <= 32) {
         body.style.fontSize = size + "px";
       }
-      // Reset container/input colors for theme or dark mode
       if (themeSelect.value) {
         applyTheme(themeSelect.value);
       } else {
@@ -384,7 +388,6 @@
       }
     }
 
-    // Theme presets
     function applyTheme(name) {
       switch(name) {
         case 'dark':
@@ -409,13 +412,11 @@
           body.style.backgroundColor = "#f3e8fd";
           break;
         default:
-          // Default fallback
           body.classList.remove('dark');
           body.style.backgroundColor = bgColorInput.value || "#f8f9fa";
       }
     }
 
-    // Update background image from file input
     bgImageInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -437,7 +438,6 @@
       body.style.backgroundColor = bgColorInput.value || "#f8f9fa";
     });
 
-    // Dark mode toggle
     darkToggle.addEventListener("change", () => {
       if (darkToggle.checked) {
         themeSelect.value = "";
@@ -448,7 +448,6 @@
       applyCustomStyles();
     });
 
-    // Theme select change disables dark toggle and vice versa
     themeSelect.addEventListener("change", () => {
       if (themeSelect.value) {
         darkToggle.checked = false;
@@ -456,7 +455,6 @@
       applyCustomStyles();
     });
 
-    // Color, font size change handlers
     bgColorInput.addEventListener("input", () => {
       if (!bgImageInput.dataset.hasImage) {
         body.style.backgroundColor = bgColorInput.value;
@@ -466,14 +464,12 @@
       applyCustomStyles();
     });
 
-    // Inputs update preview
     titleInput.addEventListener("input", updatePreview);
     messageInput.addEventListener("input", updatePreview);
 
-    // Initial preview update
     updatePreview();
 
-    // Send Notification via Firebase Command (mock example)
+    // -- Firebase Send Command --
     function sendCommand(event) {
       const title = titleInput.value.trim();
       const message = messageInput.value.trim();
@@ -484,28 +480,29 @@
         return;
       }
 
-      // Disable button to prevent multiple sends
       const btn = event.target;
       btn.disabled = true;
       statusDiv.textContent = "Sending...";
       statusDiv.style.color = "#333";
 
-      // Simulate async sending process
-      setTimeout(() => {
-        // In real usage, send via Firebase here
+      db.ref("notifications").push({
+        title: title,
+        message: message,
+        timestamp: Date.now()
+      }).then(() => {
         statusDiv.textContent = `Notification sent: "${title}" - "${message}"`;
         statusDiv.style.color = "green";
-
-        // Play sound if enabled
         if (soundToggle.checked) {
           notificationSound.play().catch(() => {});
         }
-
         btn.disabled = false;
-      }, 1200);
+      }).catch((error) => {
+        statusDiv.textContent = "Failed to send notification: " + error.message;
+        statusDiv.style.color = "red";
+        btn.disabled = false;
+      });
     }
 
-    // Initial style application
     applyCustomStyles();
   </script>
 </body>
