@@ -1,265 +1,302 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Chromebook Notifier</title>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --blue: #1a73e8;
-      --bg-light: #f8f9fa;
-      --text-light: #202124;
-      --bg-dark: #202124;
-      --text-dark: #e8eaed;
-      --card-bg-light: white;
-      --card-bg-dark: #303134;
-      --input-bg-light: white;
-      --input-bg-dark: #3c4043;
-      --input-border-light: #ccc;
-      --input-border-dark: #5f6368;
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Roboto, sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-light);
-      transition: background-color 0.3s, color 0.3s;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    body.dark {
-      background-color: var(--bg-dark);
-      color: var(--text-dark);
-    }
-    .card {
-      background: var(--card-bg-light);
-      padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    body.dark .card {
-      background: var(--card-bg-dark);
-    }
-    h2 {
-      margin-top: 0;
-      color: var(--blue);
-      text-align: center;
-    }
-    label {
-      margin-top: 1rem;
-      font-weight: 600;
-      display: block;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 0.8rem;
-      border: 1px solid var(--input-border-light);
-      border-radius: 8px;
-      font-size: 1rem;
-      background-color: var(--input-bg-light);
-      color: var(--text-light);
-      margin-bottom: 1rem;
-    }
-    body.dark input, body.dark textarea {
-      background-color: var(--input-bg-dark);
-      border-color: var(--input-border-dark);
-      color: var(--text-dark);
-    }
-    button {
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 1rem;
-      background-color: var(--blue);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #1664c1;
-    }
-    .hidden {
-      display: none;
-    }
-    .status {
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .toggle-container {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 1rem;
-    }
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 26px;
-    }
-    .switch input { display: none; }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ccc;
-      border-radius: 34px;
-      transition: 0.4s;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      border-radius: 50%;
-      transition: 0.4s;
-    }
-    input:checked + .slider {
-      background-color: var(--blue);
-    }
-    input:checked + .slider:before {
-      transform: translateX(24px);
-    }
-    .loader {
-      text-align: center;
-      font-size: 1.2rem;
-      animation: fadeIn 1s ease-in-out infinite alternate;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0.2; }
-      to { opacity: 1; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login & Notify</title>
+<style>
+  :root {
+    --blue: #1a73e8;
+    --bg-light: #f8f9fa;
+    --text-light: #202124;
+    --bg-dark: #202124;
+    --text-dark: #e8eaed;
+    --card-bg-light: white;
+    --card-bg-dark: #303134;
+    --input-bg-light: white;
+    --input-bg-dark: #3c4043;
+    --input-border-light: #ccc;
+    --input-border-dark: #5f6368;
+  }
+  body {
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    margin: 0; 
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  body.dark {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  .card {
+    background: var(--card-bg-light);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+    text-align: center;
+  }
+  body.dark .card {
+    background: var(--card-bg-dark);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  }
+  h2 {
+    margin-top: 0;
+    color: var(--blue);
+  }
+  label {
+    display: block;
+    margin: 1rem 0 0.5rem 0;
+    font-weight: 600;
+    text-align: left;
+  }
+  input, textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--input-border-light);
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    resize: none;
+    background-color: var(--input-bg-light);
+    color: var(--text-light);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  body.dark input,
+  body.dark textarea {
+    background-color: var(--input-bg-dark);
+    border-color: var(--input-border-dark);
+    color: var(--text-dark);
+  }
+  button {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    background-color: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  button:hover {
+    background-color: #1664c1;
+  }
+  #status, #loginStatus {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: red;
+  }
+  .toggle-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+    user-select: none;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+  }
+  .switch input { display: none; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    border-radius: 34px;
+    transition: 0.4s;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+  }
+  input:checked + .slider {
+    background-color: var(--blue);
+  }
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+
+  /* Welcome loading */
+  #welcomeScreen {
+    position: fixed;
+    inset: 0;
+    background: var(--blue);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    z-index: 9999;
+    user-select: none;
+  }
+  #welcomeScreen .loading-dots {
+    font-weight: 900;
+    font-size: 2rem;
+    margin-top: 1rem;
+    animation: blink 1.5s infinite;
+  }
+  @keyframes blink {
+    0%, 20% {opacity: 1;}
+    50% {opacity: 0;}
+    100% {opacity: 1;}
+  }
+</style>
 </head>
 <body>
-  <div class="card" id="loginCard">
-    <h2>🔐 Login</h2>
-    <label>Username</label>
-    <input type="text" id="username" placeholder="kvn or frvvd">
-    <label>Password</label>
-    <input type="password" id="password" placeholder="••••••••">
-    <button onclick="login()">Login</button>
-    <div class="status" id="loginStatus"></div>
+
+<!-- Login Form -->
+<div id="loginCard" class="card">
+  <h2>Login</h2>
+  <label for="usernameInput">Username</label>
+  <input type="text" id="usernameInput" autocomplete="off" />
+  <label for="passwordInput">Password</label>
+  <input type="password" id="passwordInput" autocomplete="off" />
+  <button id="loginBtn">Sign In</button>
+  <div id="loginStatus"></div>
+
+  <div class="toggle-container" style="margin-top: 2rem;">
+    <label class="switch" title="Toggle dark mode">
+      <input type="checkbox" id="darkModeToggleLogin" />
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<!-- Welcome Screen -->
+<div id="welcomeScreen" style="display:none;">
+  <div>Welcome, <span id="welcomeUser"></span></div>
+  <div class="loading-dots">...</div>
+</div>
+
+<!-- Notification Sender -->
+<div id="notifyCard" class="card" style="display:none;">
+  <div class="toggle-container">
+    <label class="switch" title="Toggle dark mode">
+      <input type="checkbox" id="darkModeToggleNotify" />
+      <span class="slider"></span>
+    </label>
   </div>
 
-  <div class="card hidden" id="welcomeCard">
-    <div class="loader" id="welcomeMessage">Welcome...</div>
-  </div>
+  <h2>📢 Chromebook Notify</h2>
+  <label for="titleInput">Title</label>
+  <input type="text" id="titleInput" placeholder="e.g., Warning" autocomplete="off" />
+  <label for="messageInput">Message</label>
+  <textarea id="messageInput" rows="3" placeholder="e.g., Please plug in your charger." autocomplete="off"></textarea>
+  <button id="sendBtn">Send Notification</button>
+  <div id="status"></div>
+</div>
 
-  <div class="card hidden" id="mainCard">
-    <div class="toggle-container">
-      <label class="switch" title="Toggle dark mode">
-        <input type="checkbox" id="darkModeToggle" />
-        <span class="slider"></span>
-      </label>
-    </div>
-    <h2>📢 Chromebook Notify</h2>
-    <label for="title">Title</label>
-    <input type="text" id="title" placeholder="e.g., Alert">
-    <label for="message">Message</label>
-    <textarea id="message" rows="3" placeholder="e.g., Please charge your device."></textarea>
-    <button onclick="sendCommand()">Send Notification</button>
-    <div class="status" id="status"></div>
-  </div>
+<script>
+  // Built-in users with passwords and ranks
+  const users = {
+    "kvn": { password: "xahirlane241269638", rank: "owner" },
+    "frvvd": { password: "roman112", rank: "admin" }
+  };
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
-      authDomain: "notify-78da1.firebaseapp.com",
-      databaseURL: "https://notify-78da1-default-rtdb.firebaseio.com",
-      projectId: "notify-78da1",
-      storageBucket: "notify-78da1.appspot.com",
-      messagingSenderId: "936289141781",
-      appId: "1:936289141781:web:065ef577df0aa61f40fa1c"
-    };
+  const body = document.body;
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const usersRef = db.ref("users");
-
-    const loginCard = document.getElementById("loginCard");
-    const welcomeCard = document.getElementById("welcomeCard");
-    const mainCard = document.getElementById("mainCard");
-    const welcomeMessage = document.getElementById("welcomeMessage");
-
-    function login() {
-      const username = document.getElementById("username").value.trim();
-      const password = document.getElementById("password").value.trim();
-      const status = document.getElementById("loginStatus");
-
-      if (!username || !password) {
-        status.textContent = "❌ Enter both username and password.";
-        return;
-      }
-
-      usersRef.child(username).once("value", (snapshot) => {
-        const user = snapshot.val();
-        if (!user || user.password !== password) {
-          status.textContent = "❌ Invalid credentials.";
-        } else {
-          showWelcome(username, user.rank);
-        }
-      });
-    }
-
-    function showWelcome(username, rank) {
-      loginCard.classList.add("hidden");
-      welcomeCard.classList.remove("hidden");
-      welcomeMessage.textContent = `👋 Welcome, ${username.toUpperCase()} (${rank})...`;
-
-      setTimeout(() => {
-        welcomeCard.classList.add("hidden");
-        mainCard.classList.remove("hidden");
-      }, 2000);
-    }
-
-    function sendCommand() {
-      const title = document.getElementById("title").value.trim();
-      const message = document.getElementById("message").value.trim();
-      const status = document.getElementById("status");
-
-      if (!title || !message) {
-        status.textContent = "⚠️ Fill in both fields.";
-        return;
-      }
-
-      db.ref("commands").set({ title, message })
-        .then(() => {
-          status.textContent = "✅ Sent!";
-          document.getElementById("title").value = "";
-          document.getElementById("message").value = "";
-        })
-        .catch(() => {
-          status.textContent = "❌ Error sending notification.";
-        });
-    }
-
-    // Dark mode
-    const toggle = document.getElementById("darkModeToggle");
-    const body = document.body;
-    if (localStorage.getItem("darkMode") === "enabled") {
-      body.classList.add("dark");
+  // Dark mode toggle shared logic
+  function setupDarkMode(toggleId, targetBody) {
+    const toggle = document.getElementById(toggleId);
+    // Load saved preference
+    if(localStorage.getItem("darkMode") === "enabled") {
+      targetBody.classList.add("dark");
       toggle.checked = true;
     }
-
     toggle.addEventListener("change", () => {
-      if (toggle.checked) {
-        body.classList.add("dark");
+      if(toggle.checked){
+        targetBody.classList.add("dark");
         localStorage.setItem("darkMode", "enabled");
       } else {
-        body.classList.remove("dark");
+        targetBody.classList.remove("dark");
         localStorage.setItem("darkMode", "disabled");
       }
     });
-  </script>
+  }
+
+  setupDarkMode("darkModeToggleLogin", body);
+  setupDarkMode("darkModeToggleNotify", body);
+
+  // Login functionality
+  const loginBtn = document.getElementById("loginBtn");
+  const loginStatus = document.getElementById("loginStatus");
+  const loginCard = document.getElementById("loginCard");
+  const welcomeScreen = document.getElementById("welcomeScreen");
+  const welcomeUser = document.getElementById("welcomeUser");
+  const notifyCard = document.getElementById("notifyCard");
+
+  loginBtn.addEventListener("click", () => {
+    const username = document.getElementById("usernameInput").value.trim();
+    const password = document.getElementById("passwordInput").value;
+
+    if (!username || !password) {
+      loginStatus.textContent = "⚠️ Enter username and password.";
+      return;
+    }
+
+    if (users[username] && users[username].password === password) {
+      // Clear status and inputs
+      loginStatus.textContent = "";
+      document.getElementById("usernameInput").value = "";
+      document.getElementById("passwordInput").value = "";
+
+      // Show welcome screen
+      welcomeUser.textContent = username;
+      loginCard.style.display = "none";
+      welcomeScreen.style.display = "flex";
+
+      // After 2.5 seconds, hide welcome & show notify UI
+      setTimeout(() => {
+        welcomeScreen.style.display = "none";
+        notifyCard.style.display = "block";
+      }, 2500);
+    } else {
+      loginStatus.textContent = "❌ Invalid login credentials.";
+    }
+  });
+
+  // Notification sender logic (just local demo, no backend)
+  const sendBtn = document.getElementById("sendBtn");
+  const status = document.getElementById("status");
+
+  sendBtn.addEventListener("click", () => {
+    const title = document.getElementById("titleInput").value.trim();
+    const message = document.getElementById("messageInput").value.trim();
+
+    if (!title || !message) {
+      status.style.color = "red";
+      status.textContent = "⚠️ Please enter both a title and message.";
+      return;
+    }
+
+    // Simulate sending notification
+    status.style.color = "green";
+    status.textContent = `✅ Notification sent:\nTitle: ${title}\nMessage: ${message}`;
+
+    // Clear inputs
+    document.getElementById("titleInput").value = "";
+    document.getElementById("messageInput").value = "";
+  });
+</script>
 </body>
 </html>
