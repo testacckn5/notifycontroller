@@ -1,8 +1,7 @@
 <!DOCTYPE html>
-
 <html>
 <head>
-  <title>Send Chromebook Notification</title>
+  <title>Chromebook Notifier</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
@@ -20,15 +19,15 @@
       --input-border-dark: #5f6368;
     }
     body {
+      margin: 0;
+      font-family: 'Segoe UI', Roboto, sans-serif;
       background-color: var(--bg-light);
       color: var(--text-light);
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-      transition: background-color 0.3s ease, color 0.3s ease;
     }
     body.dark {
       background-color: var(--bg-dark);
@@ -36,26 +35,24 @@
     }
     .card {
       background: var(--card-bg-light);
+      padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      padding: 2rem;
       width: 100%;
       max-width: 400px;
-      transition: background-color 0.3s ease;
     }
     body.dark .card {
       background: var(--card-bg-dark);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
     }
     h2 {
       margin-top: 0;
       color: var(--blue);
+      text-align: center;
     }
     label {
-      display: block;
       margin-top: 1rem;
-      margin-bottom: 0.5rem;
       font-weight: 600;
+      display: block;
     }
     input, textarea {
       width: 100%;
@@ -63,20 +60,16 @@
       border: 1px solid var(--input-border-light);
       border-radius: 8px;
       font-size: 1rem;
-      box-sizing: border-box;
-      resize: none;
       background-color: var(--input-bg-light);
       color: var(--text-light);
-      transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+      margin-bottom: 1rem;
     }
-    body.dark input,
-    body.dark textarea {
+    body.dark input, body.dark textarea {
       background-color: var(--input-bg-dark);
       border-color: var(--input-border-dark);
       color: var(--text-dark);
     }
     button {
-      margin-top: 1.5rem;
       width: 100%;
       padding: 0.8rem;
       font-size: 1rem;
@@ -85,22 +78,21 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background 0.2s ease;
     }
     button:hover {
       background-color: #1664c1;
     }
-    #status {
-      margin-top: 1rem;
-      font-size: 0.95rem;
-      text-align: center;
+    .hidden {
+      display: none;
     }
-    /* Dark mode toggle switch */
+    .status {
+      text-align: center;
+      margin-top: 1rem;
+    }
     .toggle-container {
       display: flex;
       justify-content: flex-end;
       margin-bottom: 1rem;
-      user-select: none;
     }
     .switch {
       position: relative;
@@ -134,36 +126,50 @@
     input:checked + .slider:before {
       transform: translateX(24px);
     }
+    .loader {
+      text-align: center;
+      font-size: 1.2rem;
+      animation: fadeIn 1s ease-in-out infinite alternate;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="card" id="loginCard">
+    <h2>🔐 Login</h2>
+    <label>Username</label>
+    <input type="text" id="username" placeholder="kvn or frvvd">
+    <label>Password</label>
+    <input type="password" id="password" placeholder="••••••••">
+    <button onclick="login()">Login</button>
+    <div class="status" id="loginStatus"></div>
+  </div>
+
+  <div class="card hidden" id="welcomeCard">
+    <div class="loader" id="welcomeMessage">Welcome...</div>
+  </div>
+
+  <div class="card hidden" id="mainCard">
     <div class="toggle-container">
       <label class="switch" title="Toggle dark mode">
         <input type="checkbox" id="darkModeToggle" />
         <span class="slider"></span>
       </label>
     </div>
-
-```
-<h2>📢 Chromebook Notify</h2>
-
-<label for="title">Title</label>
-<input type="text" id="title" placeholder="e.g., Warning" autocomplete="off" />
-
-<label for="message">Message</label>
-<textarea id="message" rows="3" placeholder="e.g., Please plug in your charger." autocomplete="off"></textarea>
-
-<button onclick="sendCommand()">Send Notification</button>
-<div id="status"></div>
-```
-
+    <h2>📢 Chromebook Notify</h2>
+    <label for="title">Title</label>
+    <input type="text" id="title" placeholder="e.g., Alert">
+    <label for="message">Message</label>
+    <textarea id="message" rows="3" placeholder="e.g., Please charge your device."></textarea>
+    <button onclick="sendCommand()">Send Notification</button>
+    <div class="status" id="status"></div>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
@@ -178,36 +184,68 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const usersRef = db.ref("users");
+
+    const loginCard = document.getElementById("loginCard");
+    const welcomeCard = document.getElementById("welcomeCard");
+    const mainCard = document.getElementById("mainCard");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const status = document.getElementById("loginStatus");
+
+      if (!username || !password) {
+        status.textContent = "❌ Enter both username and password.";
+        return;
+      }
+
+      usersRef.child(username).once("value", (snapshot) => {
+        const user = snapshot.val();
+        if (!user || user.password !== password) {
+          status.textContent = "❌ Invalid credentials.";
+        } else {
+          showWelcome(username, user.rank);
+        }
+      });
+    }
+
+    function showWelcome(username, rank) {
+      loginCard.classList.add("hidden");
+      welcomeCard.classList.remove("hidden");
+      welcomeMessage.textContent = `👋 Welcome, ${username.toUpperCase()} (${rank})...`;
+
+      setTimeout(() => {
+        welcomeCard.classList.add("hidden");
+        mainCard.classList.remove("hidden");
+      }, 2000);
+    }
+
     function sendCommand() {
-      const titleInput = document.getElementById("title");
-      const messageInput = document.getElementById("message");
+      const title = document.getElementById("title").value.trim();
+      const message = document.getElementById("message").value.trim();
       const status = document.getElementById("status");
 
-      const title = titleInput.value.trim();
-      const message = messageInput.value.trim();
-
       if (!title || !message) {
-        status.textContent = "⚠️ Please enter both a title and message.";
+        status.textContent = "⚠️ Fill in both fields.";
         return;
       }
 
       db.ref("commands").set({ title, message })
         .then(() => {
-          status.textContent = "✅ Notification sent!";
-          titleInput.value = "";
-          messageInput.value = "";
+          status.textContent = "✅ Sent!";
+          document.getElementById("title").value = "";
+          document.getElementById("message").value = "";
         })
-        .catch((error) => {
-          console.error(error);
+        .catch(() => {
           status.textContent = "❌ Error sending notification.";
         });
     }
 
-    // Dark mode toggle logic
+    // Dark mode
     const toggle = document.getElementById("darkModeToggle");
     const body = document.body;
-
-    // Load saved preference from localStorage
     if (localStorage.getItem("darkMode") === "enabled") {
       body.classList.add("dark");
       toggle.checked = true;
@@ -223,6 +261,5 @@
       }
     });
   </script>
-
 </body>
 </html>
