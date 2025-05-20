@@ -1,437 +1,178 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Remote Controller - Login & Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Remote Controller</title>
 <style>
   :root {
-    --blue: #1a73e8;
-    --bg-light: #f8f9fa;
-    --text-light: #202124;
-    --bg-dark: #202124;
-    --text-dark: #e8eaed;
-    --card-bg-light: white;
-    --card-bg-dark: #303134;
-    --input-bg-light: white;
-    --input-bg-dark: #3c4043;
-    --input-border-light: #ccc;
-    --input-border-dark: #5f6368;
+    --bg: #0f2027;
+    --bg-grad: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+    --glass: rgba(255, 255, 255, 0.1);
+    --highlight: #00c6ff;
+    --error: #ff5252;
+    --success: #4caf50;
+    --font: 'Segoe UI', sans-serif;
   }
+
   body {
-    background-color: var(--bg-light);
-    color: var(--text-light);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    min-height: 100vh;
+    font-family: var(--font);
+    background: var(--bg-grad);
+    color: white;
     display: flex;
-    align-items: center;
     justify-content: center;
-    transition: background-color 0.3s, color 0.3s;
+    align-items: center;
+    height: 100vh;
   }
-  body.dark {
-    background-color: var(--bg-dark);
-    color: var(--text-dark);
-  }
-  .container {
-    width: 100%;
-    max-width: 420px;
-    background: var(--card-bg-light);
-    border-radius: 16px;
+
+  .card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
     padding: 2rem;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    box-sizing: border-box;
-    transition: background-color 0.3s;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
   }
-  body.dark .container {
-    background: var(--card-bg-dark);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+
+  h2 {
+    margin-bottom: 1rem;
+    color: var(--highlight);
   }
-  h1, h2 {
-    margin-top: 0;
-    color: var(--blue);
-    user-select: none;
-  }
+
   label {
     display: block;
+    text-align: left;
     margin-top: 1rem;
-    font-weight: 600;
+    font-weight: bold;
   }
-  input, textarea, select {
+
+  input, textarea {
     width: 100%;
     padding: 0.75rem;
     margin-top: 0.3rem;
-    border: 1px solid var(--input-border-light);
-    border-radius: 8px;
+    border-radius: 10px;
+    border: none;
     font-size: 1rem;
-    background-color: var(--input-bg-light);
-    color: var(--text-light);
-    box-sizing: border-box;
-    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+    outline: none;
   }
-  body.dark input,
-  body.dark textarea,
-  body.dark select {
-    background-color: var(--input-bg-dark);
-    border-color: var(--input-border-dark);
-    color: var(--text-dark);
-  }
+
   button {
     margin-top: 1.5rem;
-    width: 100%;
-    padding: 0.85rem;
-    font-size: 1rem;
-    background-color: var(--blue);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    user-select: none;
-    transition: background-color 0.2s ease;
-  }
-  button:hover:not(:disabled) {
-    background-color: #1664c1;
-  }
-  button:disabled {
-    background-color: #a0c4ff;
-    cursor: default;
-  }
-  .toggle-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-    user-select: none;
-  }
-  .switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 26px;
-  }
-  .switch input { display: none; }
-  .slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #ccc;
-    border-radius: 34px;
-    transition: 0.4s;
-  }
-  .slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    border-radius: 50%;
-    transition: 0.4s;
-  }
-  input:checked + .slider {
-    background-color: var(--blue);
-  }
-  input:checked + .slider:before {
-    transform: translateX(24px);
-  }
-  #status {
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    min-height: 1.4em;
-    user-select: none;
-    text-align: center;
-  }
-  #welcome-screen {
-    user-select: none;
-  }
-  .link-btn {
-    background: transparent;
-    border: none;
-    color: var(--blue);
-    cursor: pointer;
-    padding: 0;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    user-select: none;
-  }
-  .link-btn:hover {
-    text-decoration: underline;
-  }
-  /* Scrollable text area for commands output */
-  #commands-log {
-    margin-top: 1rem;
-    background: #eaeaea;
-    border-radius: 8px;
     padding: 0.75rem;
-    max-height: 100px;
-    overflow-y: auto;
-    font-size: 0.9rem;
-    color: #333;
-    user-select: text;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background-color: var(--highlight);
+    color: #fff;
+    font-size: 1rem;
+    transition: background 0.3s;
   }
-  body.dark #commands-log {
-    background: #444;
-    color: #ddd;
+
+  button:hover {
+    background-color: #0093d1;
   }
+
+  .status {
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+
+  .error { color: var(--error); }
+  .success { color: var(--success); }
+
+  .hidden { display: none; }
 </style>
 </head>
 <body>
-  <div class="container" id="login-container">
-    <h1>Login / Signup</h1>
-
+  <div class="card" id="loginCard">
+    <h2>🔐 Login / Register</h2>
     <label for="username">Username</label>
-    <input id="username" autocomplete="off" />
-
+    <input id="username" type="text" placeholder="Enter username" />
     <label for="password">Password</label>
-    <input id="password" type="password" autocomplete="off" />
-
-    <label for="backupKey">Backup Key (save this!)</label>
-    <input id="backupKey" autocomplete="off" placeholder="Optional for signup or recovery" />
-
-    <button id="login-btn">Login</button>
-    <button id="signup-btn">Sign Up</button>
-    <button id="recover-btn" style="margin-top: 0.5rem;">Recover Account</button>
-
-    <div id="status"></div>
-
-    <div class="toggle-container" style="margin-top:2rem;">
-      <label class="switch" title="Toggle dark mode">
-        <input type="checkbox" id="darkModeToggle" />
-        <span class="slider"></span>
-      </label>
-    </div>
+    <input id="password" type="password" placeholder="Enter password" />
+    <button id="loginBtn">Login / Register</button>
+    <div class="status" id="loginStatus"></div>
   </div>
 
-  <div class="container" id="control-container" style="display:none;">
-    <div id="welcome-screen">
-      <h2>Welcome, <span id="displayUser"></span>!</h2>
-      <button id="logout-btn" style="background:#d9534f;">Logout</button>
-    </div>
-
-    <hr />
-
-    <h2>Send Notification & Open Tabs</h2>
-
+  <div class="card hidden" id="controllerCard">
+    <h2>🚀 Send Remote Command</h2>
     <label for="notifyTitle">Notification Title</label>
-    <input id="notifyTitle" placeholder="e.g. Warning" autocomplete="off" />
-
+    <input id="notifyTitle" placeholder="e.g. Hello" />
     <label for="notifyMessage">Notification Message</label>
-    <textarea id="notifyMessage" rows="3" placeholder="e.g. Plug in charger" autocomplete="off"></textarea>
-
-    <label for="tabUrls">URLs to open (one per line)</label>
-    <textarea id="tabUrls" rows="4" placeholder="https://example.com" autocomplete="off"></textarea>
-
-    <label for="tabDelay">Delay between tabs (ms)</label>
-    <input id="tabDelay" type="number" min="0" value="500" autocomplete="off" />
-
-    <button id="sendBtn">Send Commands</button>
-
-    <div id="statusControl"></div>
-
-    <h3>Command Log</h3>
-    <div id="commands-log"></div>
-
-    <div class="toggle-container" style="margin-top: 2rem;">
-      <label class="switch" title="Toggle dark mode">
-        <input type="checkbox" id="darkModeToggleControl" />
-        <span class="slider"></span>
-      </label>
-    </div>
+    <input id="notifyMessage" placeholder="e.g. Wake up!" />
+    <label for="tabUrls">Tab URLs (one per line)</label>
+    <textarea id="tabUrls" placeholder="https://example.com"></textarea>
+    <label for="tabDelay">Delay (ms)</label>
+    <input id="tabDelay" type="number" value="500" />
+    <button id="sendBtn">Send</button>
+    <div class="status" id="statusControl"></div>
   </div>
 
 <script>
 (() => {
-  const usersKey = 'remote-controller-users'; // localStorage key for users
-  const sessionsKey = 'remote-controller-sessions'; // commands store (unused)
-  // Utility: generate random backup key
-  function genBackupKey() {
-    return Math.random().toString(36).slice(2, 12) + Math.random().toString(36).slice(2, 12);
-  }
-  // Save users to localStorage
-  function saveUsers(users) {
-    localStorage.setItem(usersKey, JSON.stringify(users));
-  }
-  // Load users from localStorage
-  function loadUsers() {
-    let users = localStorage.getItem(usersKey);
-    return users ? JSON.parse(users) : {};
-  }
-  // Dark mode toggle
-  function setupDarkMode(toggleId) {
-    const toggle = document.getElementById(toggleId);
-    if (localStorage.getItem('darkMode') === 'enabled') {
-      document.body.classList.add('dark');
-      if(toggle) toggle.checked = true;
-    }
-    if(toggle){
-      toggle.addEventListener('change', () => {
-        if (toggle.checked) {
-          document.body.classList.add('dark');
-          localStorage.setItem('darkMode', 'enabled');
-        } else {
-          document.body.classList.remove('dark');
-          localStorage.setItem('darkMode', 'disabled');
-        }
-      });
-    }
-  }
-  // Hash password (simple, for demo only)
-  function hashPass(pass) {
-    // simple djb2 hash for demo, NOT SECURE
-    let hash = 5381;
-    for (let i = 0; i < pass.length; i++) {
-      hash = ((hash << 5) + hash) + pass.charCodeAt(i);
-    }
-    return hash >>> 0;
-  }
-  // Get form elements
-  const loginContainer = document.getElementById('login-container');
-  const controlContainer = document.getElementById('control-container');
-  const status = document.getElementById('status');
+  const usersKey = 'remote-users';
+  const loginCard = document.getElementById('loginCard');
+  const controllerCard = document.getElementById('controllerCard');
+  const loginStatus = document.getElementById('loginStatus');
   const statusControl = document.getElementById('statusControl');
-  const displayUser = document.getElementById('displayUser');
-  const inputUser = document.getElementById('username');
-  const inputPass = document.getElementById('password');
-  const inputBackup = document.getElementById('backupKey');
-  const loginBtn = document.getElementById('login-btn');
-  const signupBtn = document.getElementById('signup-btn');
-  const recoverBtn = document.getElementById('recover-btn');
-  const logoutBtn = document.getElementById('logout-btn');
-  const notifyTitle = document.getElementById('notifyTitle');
-  const notifyMessage = document.getElementById('notifyMessage');
-  const tabUrls = document.getElementById('tabUrls');
-  const tabDelay = document.getElementById('tabDelay');
-  const sendBtn = document.getElementById('sendBtn');
-  setupDarkMode('darkModeToggle');
-  setupDarkMode('darkModeToggleControl');
-  // Current logged user info
   let currentUser = null;
-  // Login function
-  loginBtn.addEventListener('click', () => {
-    const username = inputUser.value.trim().toLowerCase();
-    const password = inputPass.value;
-    if(!username || !password) {
-      status.textContent = '⚠️ Enter username and password';
+
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    if (!username || !password) {
+      loginStatus.textContent = "⚠️ Username and password required!";
+      loginStatus.className = "status error";
       return;
     }
-    let users = loadUsers();
-    if(!users[username]) {
-      status.textContent = '❌ User not found';
-      return;
+
+    let users = JSON.parse(localStorage.getItem(usersKey) || '{}');
+    if (!users[username]) {
+      const backup = Math.random().toString(36).substring(2, 10);
+      users[username] = { password, backup };
+      alert("🆕 Account created! Your backup key: " + backup);
     }
-    if(users[username].passHash !== hashPass(password)) {
-      status.textContent = '❌ Invalid password';
-      return;
+
+    if (users[username].password === password) {
+      loginCard.classList.add("hidden");
+      controllerCard.classList.remove("hidden");
+      currentUser = username;
+      statusControl.textContent = `✅ Logged in as ${username}`;
+      statusControl.className = "status success";
+    } else {
+      loginStatus.textContent = "❌ Wrong password!";
+      loginStatus.className = "status error";
     }
-    currentUser = { username, backupKey: users[username].backupKey };
-    loginSuccess();
+
+    localStorage.setItem(usersKey, JSON.stringify(users));
   });
-  // Signup function
-  signupBtn.addEventListener('click', () => {
-    const username = inputUser.value.trim().toLowerCase();
-    const password = inputPass.value;
-    let backup = inputBackup.value.trim();
-    if(!username || !password) {
-      status.textContent = '⚠️ Enter username and password to sign up';
+
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const title = document.getElementById('notifyTitle').value.trim();
+    const message = document.getElementById('notifyMessage').value.trim();
+    const urls = document.getElementById('tabUrls').value.trim().split('\n').filter(Boolean);
+    const delay = parseInt(document.getElementById('tabDelay').value) || 500;
+
+    if (!title && !message && urls.length === 0) {
+      statusControl.textContent = "⚠️ Add at least a message or tab URLs!";
+      statusControl.className = "status error";
       return;
     }
-    let users = loadUsers();
-    if(users[username]) {
-      status.textContent = '❌ Username taken';
-      return;
-    }
-    if(!backup) {
-      backup = genBackupKey();
-      alert('Your backup key (save it safely):\n' + backup);
-    }
-    users[username] = { passHash: hashPass(password), backupKey: backup };
-    saveUsers(users);
-    currentUser = { username, backupKey: backup };
-    loginSuccess();
-  });
-  // Recover function using backup key
-  recoverBtn.addEventListener('click', () => {
-    const username = inputUser.value.trim().toLowerCase();
-    const backup = inputBackup.value.trim();
-    if(!username || !backup) {
-      status.textContent = '⚠️ Enter username and backup key';
-      return;
-    }
-    let users = loadUsers();
-    if(!users[username]) {
-      status.textContent = '❌ User not found';
-      return;
-    }
-    if(users[username].backupKey !== backup) {
-      status.textContent = '❌ Backup key incorrect';
-      return;
-    }
-    currentUser = { username, backupKey: backup };
-    status.textContent = '✅ Account recovery successful, please enter new password and login.';
-  });
-  // On successful login/signup
-  function loginSuccess() {
-    status.textContent = '';
-    inputUser.value = '';
-    inputPass.value = '';
-    inputBackup.value = '';
-    loginContainer.style.display = 'none';
-    controlContainer.style.display = 'block';
-    displayUser.textContent = currentUser.username;
-    logCommand('Logged in');
-  }
-  // Logout
-  logoutBtn.addEventListener('click', () => {
-    currentUser = null;
-    controlContainer.style.display = 'none';
-    loginContainer.style.display = 'block';
-    status.textContent = '';
-    statusControl.textContent = '';
-    clearLog();
-  });
-  // Command log helper
-  const commandsLog = document.getElementById('commands-log');
-  function logCommand(text) {
-    const time = new Date().toLocaleTimeString();
-    commandsLog.textContent += `[${time}] ${text}\n`;
-    commandsLog.scrollTop = commandsLog.scrollHeight;
-  }
-  function clearLog() {
-    commandsLog.textContent = '';
-  }
-  // Send commands to localStorage
-  sendBtn.addEventListener('click', () => {
-    if (!currentUser) {
-      statusControl.textContent = '⚠️ Please login first';
-      return;
-    }
-    const title = notifyTitle.value.trim();
-    const message = notifyMessage.value.trim();
-    const urlsRaw = tabUrls.value.trim();
-    const delay = parseInt(tabDelay.value, 10) || 500;
-    if (!title && !message && !urlsRaw) {
-      statusControl.textContent = '⚠️ Enter notification or URLs to open';
-      return;
-    }
-    const urls = urlsRaw
-      .split('\n')
-      .map(u => u.trim())
-      .filter(u => u);
-    // Save the command object under a key based on username (simulate session)
+
     const command = {
-      sender: currentUser.username,
+      user: currentUser,
       timestamp: Date.now(),
       notification: { title, message },
-      tabs: { urls, delay },
+      tabs: { urls, delay }
     };
-    // Save to localStorage to be picked by notifier(s)
-    localStorage.setItem('remote-controller-command', JSON.stringify(command));
-    statusControl.textContent = '✅ Command sent';
-    logCommand(`Sent notification${title||message ? '' : ' (no message)'}${urls.length ? ` & ${urls.length} tabs open` : ''}`);
-    // Optionally clear fields after sending
-    // notifyTitle.value = '';
-    // notifyMessage.value = '';
-    // tabUrls.value = '';
+
+    localStorage.setItem("remote-cmd", JSON.stringify(command));
+    statusControl.textContent = `✅ Sent to notifier (${urls.length} tab(s))`;
+    statusControl.className = "status success";
   });
 })();
 </script>
